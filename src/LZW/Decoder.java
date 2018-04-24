@@ -8,23 +8,10 @@ import java.util.Map;
 public class Decoder
 {
 
-    private int dictSize;
+    private int dictionarySize;
     private Map<Integer, String> dictionary = new HashMap<Integer, String>();
     private Map<String, Integer> dictionaryValues = new HashMap<String, Integer>();
 
-    public static void main(String[] args)
-    {
-        try
-        {
-            Decoder d = new Decoder();
-        }
-        catch(Exception e)
-        {
-            System.err.println("There was an error while decoding...");
-        }
-    }
-
-    //Decodes using LZW
     public Decoder()
     {
         //handles input
@@ -103,8 +90,8 @@ public class Decoder
                 }
 
                 //adds key to dictionary
-                dictionary.put(dictSize++, cp);
-                dictionaryValues.put(cp, dictSize);
+                dictionary.put(dictionarySize++, cp);
+                dictionaryValues.put(cp, dictionarySize);
                 //sets the current phrase to be the next phrase
                 cp = next;
             }
@@ -121,7 +108,7 @@ public class Decoder
     //fills the dictionary for the first time
     private void initialiseDictionary()
     {
-        dictSize = 258;
+        dictionarySize = 258;
         dictionary = new HashMap<Integer, String>();
         dictionaryValues = new HashMap<String, Integer>();
 
@@ -131,4 +118,18 @@ public class Decoder
             dictionaryValues.put( "" + (char) i,i);
         }
     }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            Decoder decoder = new Decoder();
+        }
+        catch(Exception e)
+        {
+            System.err.println("Error: unexpected exception");
+        }
+    }
+
+
 }

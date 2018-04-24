@@ -48,7 +48,7 @@ public class TrieNode
         //fixes output for last char
         if(str.charAt(0) > 256)
         {
-            System.out.println(this.index);
+            System.out.write(this.index);
             return false;
         }
 

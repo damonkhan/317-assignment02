@@ -5,80 +5,82 @@ import java.io.InputStreamReader;
 
 public class Encoder
 {
-    public static void main(String[] args)
-    {
-        //ensures 1 input
-        if(args.length == 1)
-        {
-            try
-            {
-                //ensures maxDictionarySize is greater than 8
-                if(Integer.parseInt(args[0]) > 8)
-                {
-                    Encoder e = new Encoder(Integer.parseInt(args[0]));
-                }
-                else
-                {
-                    System.err.println("Please enter an integer greater than 8.");
-                }
-            }
-            catch(Exception e)
-            {
-                System.err.println("Please enter a valid integer for the maximum dictionary size (bits).");
-            }
-        }
-        else
-        {
-            System.err.println("Only a single integer is expected.");
-        }
-    }
-
     //Encodes using LZW
-    public Encoder(int maxSize)
+    public Encoder(int size)
     {
-        //creates a new trie to be used as our dictionary
-        Trie t = new Trie();
+        // Create new dictionary
+        Trie trie = new Trie();
 
-        //handles input
-        InputStreamReader isReader = new InputStreamReader(System.in);
-        int currChar;
+        // Read in standard input
+        InputStreamReader is = new InputStreamReader(System.in);
+        // The index of the current character
+        int current;
 
-        //fill the array initially
-        try (BufferedReader br = new BufferedReader(isReader))
+
+        try (BufferedReader br = new BufferedReader(is))
         {
-            //reads while the
-            while ((currChar = br.read()) != -1)
+            // While still data to be read in
+            while ((current = br.read()) != -1)
             {
                 //initial prefix
-                String cp = "" + (char)currChar;
+                String cp = "" + (char)current;
 
+                // Populate the dictionary
                 while(cp.length() > 0 && (int)cp.charAt(0) < 256)
                 {
 
-                    //checks dictionary for the largest prefix
-                    while(t.encode(cp, maxSize))
+                    while(trie.encode(cp, size))
                     {
-                        //adds a new char to prefix
+                        // Add current character to dictionary
                         cp += (char)br.read();
 
-                        //checks if the dictionary is full
-                        if (t.getDictionaryBitLength() > maxSize)
+                        // Check that there is still space in the dictionary
+                        if (trie.getDictionaryBitLength() > size)
                         {
-                            System.out.println("256");
-                            //empties the dictionary
-                            t = new Trie();
+                            System.out.println("Dictionary over capacity");
+                            trie = new Trie();
                         }
                     }
 
-                    //makes the previous character the new prefix
+                    // Shift to the next character
                     cp = "" + cp.charAt(cp.length()-1);
                 }
             }
         }
         catch(Exception e)
         {
-            //print error
-            e.printStackTrace();
+            System.err.println(e);
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        // Check for valid input
+        if(args.length != 1)
+        {
+            System.err.println("Usage: <int> - the maximum number of bits");
+            // Return control to user
+            return;
+        }
+        else
+        {
+            try
+            {
+                // Check that maximum bit size is valid
+                if(Integer.parseInt(args[0]) > 8)
+                {
+                    // Create a new encoder of size n
+                    Encoder encoder = new Encoder(Integer.parseInt(args[0]));
+                }
+                else
+                {
+                    System.err.println("Error: value must be greater than 8");
+                }
+            }
+            catch(Exception e)
+            {
+                System.err.println(e);
+            }
         }
     }
 }
